@@ -1,0 +1,25 @@
+/backend
+├── /app
+│   ├── /models
+│   │   ├── __init__.py            # Ensures 'models' is a package
+│   │   ├── user.py                # User model definition
+│   │   ├── chat.py                # Chat model definition
+│   │   ├── message.py             # Message model definition
+│   │   ├── group.py               # Group model definition
+│   ├── /routes
+│   │   ├── __init__.py            # Ensures 'routes' is a package
+│   │   ├── auth.py                # Authentication routes (register, login)
+│   │   ├── chat.py                # Chat endpoints (send, receive, etc.)
+│   │   ├── group.py               # Group chat endpoints
+│   ├── __init__.py                # Initialization and Flask app configuration
+│   ├── config.py                  # Configuration (e.g., database URI, secret key)
+│   ├── extensions.py              # External modules setup (e.g., SQLAlchemy, JWT)
+│   ├── socketio.py                # Socket.IO setup and event handling
+├── /tests
+│   ├── test_auth.py               # Unit tests for authentication
+│   ├── test_chat.py               # Unit tests for chat functionalities
+│   ├── test_group.py              # Unit tests for group functionalities
+├── .env                           # Environment variables (e.g., secret key, DB connection)
+├── requirements.txt               # Python package dependencies
+├── run.py                         # Entry point for running the Flask app
+└── README.md                      # Project overview and setup instructions
