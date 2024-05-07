@@ -14,8 +14,10 @@ def create_app():
 
     # Initialize extensions
     db.init_app(app)
+
     with app.app_context():
         db.create_all()
+
     jwt.init_app(app)
     socketio.init_app(app)
 

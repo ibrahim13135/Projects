@@ -2,13 +2,6 @@ from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from app.extensions import db
 
-user_group_association = db.Table(
-    'user_group',
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
-    db.Column('group_id', db.Integer, db.ForeignKey('group.id'))
-)
-
-# User model
 class User(db.Model):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
@@ -17,23 +10,20 @@ class User(db.Model):
     password_hash = db.Column(db.String, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+    chats = db.relationship(
+        'Chat',
+        primaryjoin='or_(User.id == Chat.user1, User.id == Chat.user2)',  # This creates the relationship
+        backref='chat',  # This enables reverse lookup
+        lazy='dynamic'  # Loads the chats lazily
+    )
+
+
     def __init__(self, name, email, password):
         super().__init__()
         self.name = name
         self.email = email
         self.set_password(password)
 
-    # Other relationships
-    chats = db.relationship("Chat", secondary='user_chat', back_populates="users")
-    
-    groups = db.relationship(
-        "Group", secondary=user_group_association, back_populates="members"
-    )
-
-    # Relationship for admin group
-    admin_group = db.relationship(
-        "Group", uselist=False, back_populates="admin"
-    )
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)

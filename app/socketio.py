@@ -1,6 +1,7 @@
 # app/socketio.py
 from flask_socketio import emit, join_room, leave_room
 from app.extensions import socketio
+from app.extensions import db
 from app.models import Message
 
 @socketio.on('join')

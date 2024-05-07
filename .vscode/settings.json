@@ -2,6 +2,7 @@
     "cSpell.words": [
         "backref",
         "dotenv",
+        "primaryjoin",
         "werkzeug"
     ],
     "sqltools.connections": [],

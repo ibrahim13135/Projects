@@ -1,21 +1,39 @@
 from datetime import datetime
 from app.extensions import db  # Importing the initialized SQLAlchemy instance
-
-# Many-to-many relationship between users and chats
-user_chat_association = db.Table(
-    'user_chat',
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
-    db.Column('chat_id', db.Integer, db.ForeignKey('chat.id'))
-)
-
-# Chat model
+from .message import Message
 class Chat(db.Model):
     __tablename__ = 'chat'
     id = db.Column(db.Integer, primary_key=True)
+    user1 = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user2 = db.Column(db.Integer, db.ForeignKey('user.id'))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    owner_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
 
-    # Relationships
-    messages = db.relationship("Message", back_populates="chat")
-    users = db.relationship("User", secondary=user_chat_association, back_populates="chats")
+    messages = db.relationship(
+        'Message',
+        primaryjoin='Chat.id == Message.chat',  # This creates the relationship
+        backref='message',  # This enables reverse lookup
+        lazy='dynamic'  # Loads the chats lazily
+    )
 
+    # users is a list of users in the chat
+    def __init__(self, user1, user2):
+        super().__init__()
+        self.user1 = user1.id
+        self.user2 = user2.id
+
+    def __repr__(self):
+        return f"<Chat {self.id}>"
+
+    @staticmethod
+    def exists(user1, user2):
+        return Chat.query.filter(
+            (Chat.user1 == user1.id) & (Chat.user2 == user2.id) |
+            (Chat.user1 == user2.id) & (Chat.user2 == user1.id)
+        ).first() is not None;
+
+    @staticmethod
+    def send_message(chat_id, sender_id, content):
+        message = Message(chat_id, sender_id, content=content)
+        db.session.add(message)
+        db.session.commit()
+        return message
