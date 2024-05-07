@@ -1,29 +1,36 @@
 # app/socketio.py
-from flask_socketio import emit, join_room, leave_room
+from flask_socketio import SocketIO, emit, join_room, leave_room
 from app.extensions import socketio
+from app.models.message import Message  # If you store chat messages
 from app.extensions import db
-from app.models import Message
 
+# Event when a user joins a room
 @socketio.on('join')
 def handle_join(data):
     room = data['room']
+    username = data['username']
     join_room(room)
-    emit('message', {'msg': f'{data["username"]} has joined the room.'}, to=room)
+    emit('message', {'msg': f'{username} has joined the room.'}, to=room)
 
+# Event when a user leaves a room
 @socketio.on('leave')
 def handle_leave(data):
     room = data['room']
+    username = data['username']
     leave_room(room)
-    emit('message', {'msg': f'{data["username"]} has left the room.'}, to=room)
+    emit('message', {'msg': f'{username} has left the room.'}, to=room)
 
+# Event when a user sends a message
 @socketio.on('send_message')
 def handle_send_message(data):
     room = data['room']
-    sender_id = data['sender_id']
-    message_content = data['content']
+    content = data['content']
+    sender_id = data['sender_id']  # Assuming you have sender info
 
-    message = Message(chat_id=room, sender_id=sender_id, content=message_content)
+    # If storing messages, you can add it to the database
+    message = Message(chat_id=room, sender_id=sender_id, content=content)
     db.session.add(message)
     db.session.commit()
 
-    emit('message', {'msg': message_content, 'sender_id': sender_id}, to=room)
+    # Broadcast the message to everyone in the room
+    emit('message', {'msg': content, 'sender_id': sender_id}, to=room)
