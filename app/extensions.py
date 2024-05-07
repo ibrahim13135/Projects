@@ -5,7 +5,6 @@ from flask_socketio import SocketIO
 
 # Create the SQLAlchemy instance
 db = SQLAlchemy()
-
 # Other extensions
 jwt = JWTManager()
 

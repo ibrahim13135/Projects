@@ -2,6 +2,7 @@
 from flask import Flask
 from .extensions import db, jwt, socketio
 from .config import Config
+from flask_cors import CORS
 
 # Ensure blueprints are imported correctly
 from .routes.auth import auth_blueprint
@@ -10,6 +11,7 @@ from .routes.group import group_blueprint  # Import all blueprints
 
 def create_app():
     app = Flask(__name__)
+    CORS(app, resources={r"/*": {"origins": "*"}})
     app.config.from_object(Config)
 
     # Initialize extensions

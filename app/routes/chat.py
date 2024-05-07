@@ -38,9 +38,23 @@ def send_message():
     chat_id = data.get("chat_id")
     sender_id = get_jwt_identity()
     content = data.get("content")
-    Chat.send_message(chat_id, sender_id, content)
-    # Broadcast the message to the chat room via Socket.IO
-    socketio.emit("message", {"chat_id": chat_id, "sender_id": sender_id, "content": content}, room=str(chat_id))
+
+    # Sending the message in the chat
+    message = Message(chat_id=chat_id, sender_id=sender_id, content=content)
+    db.session.add(message)
+    db.session.commit()
+
+    # Emit the message to the Socket.IO room associated with this chat
+    socketio.emit(
+        "new_message",
+        {
+            "chat_id": chat_id,
+            "sender_id": sender_id,
+            "content": content,
+            "timestamp": message.timestamp.isoformat()  # ISO format for easy parsing
+        },
+        room=str(chat_id)  # Emit to the specific chat room
+    )
 
     return jsonify({"message": "Message sent"}), 201
 
