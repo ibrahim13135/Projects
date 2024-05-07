@@ -2,6 +2,7 @@
 *.tmp
 __pycache__/
 instance/
+venv/
 *.pyc
 *.pyo
 *.pyd
