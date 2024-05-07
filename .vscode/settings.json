@@ -1,6 +1,9 @@
 {
     "cSpell.words": [
+        "backref",
         "dotenv",
         "werkzeug"
-    ]
+    ],
+    "sqltools.connections": [],
+    "sqltools.useNodeRuntime": true
 }

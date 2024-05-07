@@ -2,7 +2,7 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.models.chat import Chat
-from app.models.group import Group, GroupMembership
+from app.models.group import Group
 from app.models.message import Message
 from app.extensions import db, socketio
 
@@ -28,9 +28,9 @@ def join_group():
     group_id = data.get("group_id")
     user_id = get_jwt_identity()
 
-    membership = GroupMembership(group_id=group_id, user_id=user_id)
-    db.session.add(membership)
-    db.session.commit()
+    # membership = GroupMembership(group_id=group_id, user_id=user_id)
+    # db.session.add(membership)
+    # db.session.commit()
 
     return jsonify({"message": "User joined the group"}), 201
 

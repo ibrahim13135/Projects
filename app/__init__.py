@@ -2,6 +2,7 @@
 from flask import Flask
 from .extensions import db, jwt, socketio
 from .config import Config
+
 # Ensure blueprints are imported correctly
 from .routes.auth import auth_blueprint
 from .routes.chat import chat_blueprint
@@ -13,10 +14,10 @@ def create_app():
 
     # Initialize extensions
     db.init_app(app)
-    jwt.init_app(app)
-    socketio.init_app(app)
     with app.app_context():
         db.create_all()
+    jwt.init_app(app)
+    socketio.init_app(app)
 
     # Register blueprints
     app.register_blueprint(auth_blueprint, url_prefix="/auth")

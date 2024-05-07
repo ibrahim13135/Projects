@@ -1,28 +1,22 @@
-# app/models/group.py
-from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-from app.extensions import db  # Correct SQLAlchemy reference
-from app.models.user import User  # Import User
+from app.extensions import db  # Importing the initialized SQLAlchemy instance
+from .user import user_group_association
 
-# Define the Group model
+# Group model
 class Group(db.Model):
-    __tablename__ = 'groups'
-
+    __tablename__ = 'group'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), unique=True, nullable=False)
+    name = db.Column(db.String, nullable=False, unique=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    # Ensure proper foreign key reference to `User`
-    admin_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    admin_id = db.Column(db.Integer, db.ForeignKey("user.id"))  # Establishing the foreign key
+    admin = db.relationship("User", back_populates="admin_group")  # Correcting the relationship with User
 
-    admin = db.relationship('User', foreign_keys=[admin_id])
+    # Relationships
+    chats = db.Column(db.Integer, db.ForeignKey("chat.id"))
 
-    members = db.relationship('User', secondary='group_memberships', backref='groups')
-
-# Define the GroupMembership model
-class GroupMembership(db.Model):
-    __tablename__ = 'group_memberships'
-
-    id = db.Column(db.Integer, primary_key=True)
-    group_id = db.Column(db.Integer, db.ForeignKey('groups.id'), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    members = db.relationship(
+        "User",
+        secondary=user_group_association,
+        back_populates="groups"
+    )

@@ -1,7 +1,6 @@
 # app/routes/auth.py
 from flask import Blueprint, request, jsonify, make_response
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
-from werkzeug.security import generate_password_hash
 from app.models.user import User
 from app.extensions import db
 
@@ -10,23 +9,22 @@ auth_blueprint = Blueprint('auth', __name__)
 @auth_blueprint.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
-    username = data.get("username")
+    name = data.get("name")
     email = data.get("email")
     password = data.get("password")
-    print(data)
     if User.query.filter_by(email=email).first():
         return jsonify({"message": "Email already exists"}), 400
 
     new_user = User(
-        username=username,
-        email=email,
-        password_hash=generate_password_hash(password),
+        name,
+        email,
+        password,
     )
 
     db.session.add(new_user)
     db.session.commit()
 
-    return jsonify({"message": "User registered successfully"}), 201
+    return jsonify({"message": "User created"}), 201
 
 
 @auth_blueprint.route('/login', methods=['POST'])
@@ -36,6 +34,7 @@ def login():
     password = data.get("password")
 
     user = User.query.filter_by(email=email).first()
+    print(user.email)
 
     if not user or not user.check_password(password):
         return jsonify({"message": "Invalid credentials"}), 401
@@ -64,7 +63,7 @@ def get_current_user():
     
     return jsonify({
         "id": user.id,
-        "username": user.username,
+        "name": user.name,
         "email": user.email,
         "created_at": user.created_at.isoformat(),
     }), 200

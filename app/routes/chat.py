@@ -12,10 +12,14 @@ chat_blueprint = Blueprint('chat', __name__)
 def create_chat():
     data = request.get_json()
     user_id = get_jwt_identity()
-    other_user_id = data.get("other_user_id")
+    other_user_id = data.get("with")
+
+    # search
+    # if chat:
+    #     return jsonify({"chat_id": chat.id}), 200
 
     # Create a one-to-one chat
-    chat = Chat(user1_id=user_id, user2_id=other_user_id)
+    chat = Chat(owner_id = user_id)
     db.session.add(chat)
     db.session.commit()
 
@@ -42,6 +46,8 @@ def send_message():
 @jwt_required()
 def receive_messages():
     chat_id = request.args.get("chat_id")
-    messages = Message.query.filter_by(chat_id=chat_id).order_by(Message.timestamp).all()
+    # get the messages for the chat it is in relation with messages
+    # chat = Chat.query.get(chat_id)
+    # msg = chat.messages.all()
 
     return jsonify([{"id": msg.id, "sender_id": msg.sender_id, "content": msg.content, "timestamp": msg.timestamp} for msg in messages]), 200

@@ -8,4 +8,5 @@ db = SQLAlchemy()
 
 # Other extensions
 jwt = JWTManager()
+
 socketio = SocketIO(cors_allowed_origins="*")

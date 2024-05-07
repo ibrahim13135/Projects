@@ -1,16 +1,15 @@
-# app/models/message.py
 from datetime import datetime
-from app.extensions import db  # Import the SQLAlchemy instance
+from app.extensions import db  # Importing the initialized SQLAlchemy instance
 
-
+# Message model
 class Message(db.Model):
-    __tablename__ = 'messages'
-
+    __tablename__ = 'message'
     id = db.Column(db.Integer, primary_key=True)
-    chat_id = db.Column(db.Integer, db.ForeignKey('chats.id'), nullable=False)
-    sender_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    content = db.Column(db.String(1000), nullable=False)
+    content = db.Column(db.Text, nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    chat_id = db.Column(db.Integer, db.ForeignKey("chat.id"))
+    sender_id = db.Column(db.Integer, db.ForeignKey("user.id"))
 
-    chat = db.relationship('Chat', backref='messages')
-    sender = db.relationship('User', foreign_keys=[sender_id])
+    # Relationships
+    chat = db.relationship("Chat", back_populates="messages")
+    sender = db.relationship("User")
