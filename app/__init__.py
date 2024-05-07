@@ -11,7 +11,14 @@ from .routes.group import group_blueprint  # Import all blueprints
 
 def create_app():
     app = Flask(__name__)
-    CORS(app, resources={r"/*": {"origins": "*"}})
+    CORS(
+        app,
+        origins=["http://localhost:5173"],
+        methods=["GET", "POST", "OPTIONS", "PUT", "DELETE"],
+        # access cookies from the frontend
+        allow_headers=["Content-Type", "Authorization", "Cookie"],
+        supports_credentials=True,
+    )
     app.config.from_object(Config)
 
     # Initialize extensions

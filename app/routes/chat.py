@@ -9,12 +9,11 @@ from app.extensions import db, socketio
 chat_blueprint = Blueprint('chat', __name__)
 
 @chat_blueprint.route('/create', methods=['POST'])
-@jwt_required()
+@jwt_required(locations=['headers'])
 def create_chat():
     data = request.get_json()
     sender_id = get_jwt_identity()
-    user_email = data.get("with")
-
+    user_email = data.get("withEmail")
     user1 = User.query.get(sender_id)
     user2 = User.query.filter_by(email=user_email).first()
 
@@ -29,10 +28,28 @@ def create_chat():
     db.session.add(chat)
     db.session.commit()
 
-    return jsonify({"chat_id": chat.id}), 201
+    this_chat = user1.chats.filter((Chat.id == chat.id)).first()
+
+    return jsonify({
+        "id": this_chat.id,
+        "user1": this_chat.user1,
+        "user2": this_chat.user2,
+        "created_at": this_chat.created_at,
+        "messages":  [
+            {
+                "id": message.id,
+                "chat": message.chat,
+                "sender_id": message.sender_id,
+                "content": message.content,
+                "seen": message.seen,
+                "timestamp": message.timestamp
+            }
+            for message in this_chat.messages.all()
+        ]
+    }), 201
 
 @chat_blueprint.route('/send', methods=['POST'])
-@jwt_required()
+@jwt_required(locations=['headers'])
 def send_message():
     data = request.get_json()
     chat_id = data.get("chat_id")
@@ -56,15 +73,22 @@ def send_message():
         room=str(chat_id)  # Emit to the specific chat room
     )
 
-    return jsonify({"message": "Message sent"}), 201
+    return jsonify({
+        "id": message.id,
+        "chat": message.chat,
+        "sender_id": message.sender_id,
+        "content": message.content,
+        "seen": message.seen,
+        "timestamp": message.timestamp  # ISO format for easy parsing
+    }), 201
 
 
 @chat_blueprint.route('/list', methods=['GET'])
-@jwt_required()
+@jwt_required(locations=['headers'])
 def list_chats():
     user_id = get_jwt_identity()
     user = User.query.get(user_id)
-    chats = user.chats
+    chats = user.chats.all()
 
     return jsonify(
         {
@@ -74,9 +98,20 @@ def list_chats():
                     "user1": chat.user1,
                     "user2": chat.user2,
                     "created_at": chat.created_at,
+                    "messages": [
+                        {
+                            "id": message.id,
+                            "chat": message.chat,
+                            "sender_id": message.sender_id,
+                            "content": message.content,
+                            "seen": message.seen,
+                            "timestamp": message.timestamp
+                        }
+                        for message in chat.messages.all()
+                    ]
                 }
                 for chat in chats
-            ],
+            ]
         }
     ), 200
 

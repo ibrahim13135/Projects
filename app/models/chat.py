@@ -4,8 +4,8 @@ from .message import Message
 class Chat(db.Model):
     __tablename__ = 'chat'
     id = db.Column(db.Integer, primary_key=True)
-    user1 = db.Column(db.Integer, db.ForeignKey('user.id'))
-    user2 = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user1 = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user2 = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     messages = db.relationship(
