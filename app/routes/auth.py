@@ -34,10 +34,12 @@ def login():
     password = data.get("password")
 
     user = User.query.filter_by(email=email).first()
-    print(user.email)
 
-    if not user or not user.check_password(password):
-        return jsonify({"message": "Invalid credentials"}), 401
+    if not user :
+        return jsonify({"message": "User not found"}), 404
+    
+    if not user.check_password(password):
+        return jsonify({"message": "Incorrect password"}), 401
 
     access_token = create_access_token(identity=user.id)
 
@@ -60,12 +62,17 @@ def get_current_user():
     user = User.query.get(user_id)
     if not user:
         return jsonify({"message": "User not found"}), 404
-    
+
+
+  
     return jsonify({
         "id": user.id,
         "name": user.name,
         "email": user.email,
-        "created_at": user.created_at.isoformat(),
+        "created_at": user.created_at,
+        "chats" : [chat.id for chat in user.chats],
+        "groups" : [group.id for group in user.groups],
+        "created_groups" : [group.id for group in user.created_groups]
     }), 200
 
 @auth_blueprint.route('/logout', methods=['POST'])
