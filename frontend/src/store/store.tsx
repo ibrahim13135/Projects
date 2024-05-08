@@ -6,6 +6,7 @@ type AppState = {
   user: User | null;
   chats: Chat[] | null;
   groups: Group[] | null;
+  currentChat: Chat | null;
 };
 
 // Define action types
@@ -14,7 +15,8 @@ type AppAction =
   | { type: 'SET_CHATS'; payload: AppState['chats'] }
   | { type: 'SET_GROUPS'; payload: AppState['groups'] }
   | { type: 'NEW_CHAT'; payload: Chat }
-  | { type: 'NEW_GROUP'; payload: Group };
+  | { type: 'NEW_GROUP'; payload: Group }
+  | { type: 'OPEN_CHAT'; payload: Chat }
 
 // Reducer function to manage state transitions
 const appReducer = (state: AppState, action: AppAction): AppState => {
@@ -29,6 +31,8 @@ const appReducer = (state: AppState, action: AppAction): AppState => {
       return { ...state, groups: action.payload };
     case 'NEW_GROUP':
       return { ...state, groups: state.groups ? [...state.groups, action.payload] : [action.payload] };
+    case 'OPEN_CHAT':
+      return { ...state, currentChat: action.payload };
     default:
       return state;
   }
@@ -46,6 +50,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     user: null,
     chats: [],
     groups: [],
+    currentChat: null,
   });
 
   return (

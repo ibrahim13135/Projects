@@ -4,6 +4,8 @@
         "dotenv",
         "ondelete",
         "primaryjoin",
+        "Signin",
+        "Signup",
         "werkzeug"
     ],
     "sqltools.connections": [],

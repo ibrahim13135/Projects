@@ -1,8 +1,10 @@
 import { useAppStore } from "../store";
 import { Chat, Message } from "../types";
+import { useOpenChat } from "./currentChat";
 
 export const useChatActions = () => {
     const {state, dispatch } = useAppStore();
+    const {open} = useOpenChat();
 
     const validate = () => {
         if (localStorage.getItem('token') && localStorage.getItem('token') !== 'undefined') {
@@ -25,6 +27,7 @@ export const useChatActions = () => {
         })
         .then(response => response.json())
         .then(data => {
+            data &&
             dispatch({ type: 'NEW_CHAT', payload: data });
         });
     }
@@ -41,6 +44,7 @@ export const useChatActions = () => {
         })
         .then(response => response.json())
         .then(data => {
+            data &&
             dispatch({ type: 'SET_CHATS', payload: data.chats });
         });
     };
@@ -58,14 +62,14 @@ export const useChatActions = () => {
         })
         .then(response => response.json())
         .then((data:Message) => {
-            // get this chat from state and edit it
             const chat = state.chats?.find(chat => chat.id === chat_id);
             if (chat) {
-                // replace the chat with the new one
                 const newChat : Chat = {...chat,
-                     messages: chat.messages ? [...chat.messages, data] : [data]
-                    };
+                    messages: chat.messages ? [...chat.messages, data] : [data]
+                };
+                open(newChat);
                 const chats = state.chats?.map(chat => chat.id === chat_id ? newChat : chat) || [];
+                console.log(chats);
                 dispatch({ type: 'SET_CHATS', payload: chats });
             }
 

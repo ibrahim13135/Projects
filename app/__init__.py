@@ -7,7 +7,8 @@ from flask_cors import CORS
 # Ensure blueprints are imported correctly
 from .routes.auth import auth_blueprint
 from .routes.chat import chat_blueprint
-from .routes.group import group_blueprint  # Import all blueprints
+from .routes.group import group_blueprint
+from .routes.user import user_blueprint
 
 def create_app():
     app = Flask(__name__)
@@ -34,5 +35,6 @@ def create_app():
     app.register_blueprint(auth_blueprint, url_prefix="/auth")
     app.register_blueprint(chat_blueprint, url_prefix="/chat")
     app.register_blueprint(group_blueprint, url_prefix="/group")
+    app.register_blueprint(user_blueprint, url_prefix="/user")
 
     return app

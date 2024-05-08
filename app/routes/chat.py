@@ -18,11 +18,11 @@ def create_chat():
     user2 = User.query.filter_by(email=user_email).first()
 
     if not user2:
-        return jsonify({"message": "User not found"}), 404
+        return jsonify(), 404
 
     # Create a one-to-one chat
     if Chat.exists(user1, user2):
-        return jsonify({"message": "Chat already exists"}), 400
+        return jsonify(), 400
 
     chat = Chat(user1, user2)
     db.session.add(chat)
@@ -34,6 +34,7 @@ def create_chat():
         "id": this_chat.id,
         "user1": this_chat.user1,
         "user2": this_chat.user2,
+        "users": this_chat.users,
         "created_at": this_chat.created_at,
         "messages":  [
             {
@@ -88,6 +89,8 @@ def send_message():
 def list_chats():
     user_id = get_jwt_identity()
     user = User.query.get(user_id)
+    if not user:
+        return jsonify(), 404
     chats = user.chats.all()
 
     return jsonify(
@@ -97,6 +100,7 @@ def list_chats():
                     "id": chat.id,
                     "user1": chat.user1,
                     "user2": chat.user2,
+                    "users": chat.users,
                     "created_at": chat.created_at,
                     "messages": [
                         {

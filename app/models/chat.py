@@ -6,6 +6,7 @@ class Chat(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user1 = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     user2 = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    users = db.Column(db.JSON, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     messages = db.relationship(
@@ -20,6 +21,7 @@ class Chat(db.Model):
         super().__init__()
         self.user1 = user1.id
         self.user2 = user2.id
+        self.users = [user1.id, user2.id]
 
     def __repr__(self):
         return f"<Chat {self.id}>"
