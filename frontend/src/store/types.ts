@@ -13,7 +13,6 @@ export type Message = {
     content: string
     timestamp: string
     sender_id: number
-    chat: number
     seen: boolean
 }
 
@@ -28,8 +27,14 @@ export type Chat = {
 export type Group = {
     id: number
     name: string
-    members: number[]
+    members: Member[]
     created_at: string
     creator_id: number
     messages: Message[]
+}
+
+export type Member = {
+    id: number
+    name: string
+    email: string
 }

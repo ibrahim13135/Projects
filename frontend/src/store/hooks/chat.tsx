@@ -3,8 +3,17 @@ import { Chat, Message } from "../types";
 
 export const useChatActions = () => {
     const {state, dispatch } = useAppStore();
+
+    const validate = () => {
+        if (localStorage.getItem('token') && localStorage.getItem('token') !== 'undefined') {
+            return true;
+        } else {
+            return false;
+        }
+    }
     
     const create = async (withEmail:string) => {
+        validate() &&
         fetch('http://127.0.0.1:5001/chat/create', {
             method: 'POST',
             credentials: 'include',
@@ -16,12 +25,12 @@ export const useChatActions = () => {
         })
         .then(response => response.json())
         .then(data => {
-            console.log(data);
             dispatch({ type: 'NEW_CHAT', payload: data });
         });
     }
 
     const list = async () => {
+        validate() &&
         fetch('http://127.0.0.1:5001/chat/list', {
             method: 'GET',
             credentials: 'include',
@@ -37,7 +46,7 @@ export const useChatActions = () => {
     };
 
     const send = async (chat_id: number, content: string) => {
-        
+        validate() &&
         fetch('http://127.0.0.1:5001/chat/send', {
             method: 'POST',
             credentials: 'include',

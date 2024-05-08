@@ -1,25 +1,23 @@
-import React, {useEffect} from 'react';
-import { useChatActions } from './store/hooks/chat';
+import React, {useEffect, useState} from 'react';
 import { useAuthActions } from './store/hooks/auth';
+import { useGroupActions } from './store/hooks/group';
 
 const App: React.FC = () => {
-  const { chats, create, list, send } = useChatActions();
-  const [chatId, setChatId] = React.useState<number>(0);
-  const [content, setContent] = React.useState<string>("");
+  const [message, setMessage] = useState<string>('');
 
-  const { login, me } = useAuthActions();
-
-  const handleCreate = () => {
-    create('use@gmail.com');
-  }
+  const { user, login, me } = useAuthActions();
+  const { groups, create, deleteGroup, addMember, list, send } = useGroupActions();
 
   const handleLogin = () => {
     login({email: 'hasan@gmail.com' , password: 'password123'});
   }
 
-  const handleSend = () => {
-    if (!chatId || !content) return;
-    send(chatId, content);
+  const handleCreateGroup = () => {
+    create('My Group');
+  }
+
+  const handleAddMember = (group_id:number) => {
+    addMember(group_id, 'user@gmail.com');
   }
 
   useEffect(() => {
@@ -27,49 +25,55 @@ const App: React.FC = () => {
     list();
   }, []);
 
+  // register({email: 'hasan@gmail.com', password: 'password123', name: 'Hasan'});
+  console.log(groups);
+  
   
   return (
-    <div className="h-screen flex items-center flex-col justify-center gap-5">
+    <div className="h-screen flex items-center flex-col p-4 gap-5">
+      <h1 className="text-3xl font-bold">Welcome {user?.name || 'to Chat App'}</h1>
       <div className="flex gap-5">
-        <button onClick={handleCreate} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-          Create Chat
-        </button>
         <button onClick={handleLogin} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
           Login
         </button>
+
+        <button onClick={handleCreateGroup} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          Create Group
+        </button>
       </div>
-      <div className="flex flex-col gap-5">
-        {chats && chats.map(chat => (
-          <div
-            className="flex flex-col gap-5 bg-gray-600 p-2 rounded-lg text-blue-600"
-            key={chat.id}>
-            {chat.id} - {chat.user1}  - {chat.user2}
-            {chat.messages && chat.messages.map(message => (
-              // message card
-              <div
-                className="bg-gray-300 p-2 rounded-lg"
-                key={message.id}>
-                {message.content}
+
+        <div className="flex flex-col gap-2 text-yellow-400">
+          {groups && groups?.map(group => (
+            <div key={group.id} className="bg-gray-100 p-2 gap-2 flex flex-col rounded">
+              <h2 className="font-bold">{group.name}</h2>
+              <p>{group.id}</p>
+              <p>{group.messages?.map(message => message.content).join(', ')}</p>
+              <p>{group.members?.map(member => member.name).join(', ')}</p>
+
+              <div className="flex gap-2">
+                <input
+                  value={message}
+                  onChange={e => setMessage(e.target.value)}
+                  className="border border-gray-400 p-1 rounded" 
+                  placeholder="Type a message"
+                type="text"/>
+                <button onClick={() => send(group.id, message)} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded">
+                  Send Message
+                </button>
               </div>
-            ))}
-          </div>
-        ))}
-        <div className="flex gap-5 flex-col">
-              <input 
-                className=""
-                value={chatId}
-                onChange={(e) => setChatId(+e.target.value)}
-                type="number" />
-              <input
-                className=""
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                type="text" />
-              <button onClick={handleSend} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                Send
-              </button>
+
+              <div className="flex gap-2 w-full justify-around ">
+                <button onClick={() => deleteGroup(group.id)} className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded">
+                  Delete
+                </button>
+                <button onClick={() => handleAddMember(group.id)} className="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded">
+                  Add Member
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
-      </div>
+
     </div>
   );
 };

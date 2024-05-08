@@ -2,8 +2,17 @@ import { useAppStore } from "../store";
 
 export const useAuthActions = () => {
     const {state, dispatch } = useAppStore();
+
+    const validate = () => {
+        if (localStorage.getItem('token') && localStorage.getItem('token') !== 'undefined') {
+            return true;
+        } else {
+            return false;
+        }
+    }
     
     const me = async () => {
+        validate() &&
         fetch('http://127.0.0.1:5001/auth/me', {
             method: 'GET',
             credentials: 'include',

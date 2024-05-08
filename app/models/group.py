@@ -3,12 +3,13 @@ from app.extensions import db
 
 class Membership(db.Model):
     __tablename__ = 'membership'
-    group_id = db.Column(db.Integer, db.ForeignKey('group.id'), primary_key=True)
+    group_id = db.Column(db.Integer, db.ForeignKey('group.id', ondelete='CASCADE'), primary_key=True)
     member_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
     joined_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __repr__(self):
         return f'<Membership {self.group_id}-{self.member_id}>'
+
 # Group model: represents a group in a chat application
 class Group(db.Model):
     __tablename__ = 'group'
@@ -49,15 +50,15 @@ class Group(db.Model):
 class GroupMessage(db.Model):
     __tablename__ = 'group_message'
     id = db.Column(db.Integer, primary_key=True)
-    group_id = db.Column(db.Integer, db.ForeignKey('group.id'), nullable=False)  # Group reference
+    group_id = db.Column(db.Integer, db.ForeignKey('group.id', ondelete='CASCADE'), nullable=False)  # Group reference
     sender_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  # Sender's ID
     content = db.Column(db.Text, nullable=False)  # Message content
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)  # Timestamp for when the message was sent
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)  # Timestamp for when the message was sent
 
     # Back-populates
     sender = db.relationship(
         'User',
-        backref='sent_group_messages'
+        backref='sent_group_messages',
     )
 
     def __repr__(self):
