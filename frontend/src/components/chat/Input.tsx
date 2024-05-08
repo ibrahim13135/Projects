@@ -1,4 +1,4 @@
-import React from 'react';
+import React  from 'react';
 import { useChatActions } from '../../store/hooks/chat';
 import { useOpenChat } from '../../store/hooks/currentChat';
 import data from '@emoji-mart/data'

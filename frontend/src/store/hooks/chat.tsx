@@ -12,7 +12,7 @@ export const useChatActions = () => {
         } else {
             return false;
         }
-    }
+    };
     
     const create = async (withEmail:string) => {
         validate() &&
@@ -30,7 +30,7 @@ export const useChatActions = () => {
             data &&
             dispatch({ type: 'NEW_CHAT', payload: data });
         });
-    }
+    };
 
     const list = async () => {
         validate() &&
@@ -74,7 +74,7 @@ export const useChatActions = () => {
             }
 
         });
-    }
+    };
 
     return {chats: state.chats, create, list, send};
 };

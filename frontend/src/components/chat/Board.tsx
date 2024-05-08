@@ -2,12 +2,18 @@ import React from 'react';
 import Message from '../Message';
 import { useOpenChat } from '../../store/hooks/currentChat';
 import Input from './Input';
+import socket from '../../server';
 
 const Board : React.FC = () => {
     const { currentChat } = useOpenChat();
     const chat = currentChat;
     const messages = chat?.messages;
-    
+
+    socket.on("new_message", (data) => {
+      console.log("Received new message:", data.content);
+  });
+  
+
     return (
       <>
         <div className="flex flex-col h-full overflow-x-auto mb-4">

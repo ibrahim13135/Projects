@@ -9,10 +9,8 @@ import ChatList from '../components/LeftBar/ChatList';
 import Board from '../components/chat/Board';
 
 
-const ChatApp: React.FC = () => {
+const ChatApp: React.FC = () => {  
 
-
-  
   return (
     <div className="flex h-screen antialiased text-gray-800">
         <div className="flex flex-row h-full w-full overflow-x-hidden">
